@@ -16,9 +16,9 @@ DISPLAYSURF = pygame.display.set_mode((SCREEN_W, SCREEN_H), 0, 32)
 pygame.display.set_caption('Animation')
 
 WHITE = (255, 255, 255)
-catImg = pygame.image.load('mariokart.png')
-catx = 10
-caty = 10
+marioImg = pygame.image.load('mariokart.png')
+mariox = 10
+marioy = 10
 direction = 'right'
 
 while True: # the main game loop
@@ -58,24 +58,24 @@ while True: # the main game loop
 
 
     if direction == 'right':
-        catx += 5
-        if catx >= SCREEN_W - 120:
+        mariox += 5
+        if mariox >= SCREEN_W - 120:
             direction = 'down'
     elif direction == 'down':
-        caty += 5
-        if caty >= SCREEN_H - 80:
+        marioy += 5
+        if marioy >= SCREEN_H - 80:
             direction = 'left'
     elif direction == 'left':
-        catx -= 5
-        if catx <= 10:
+        mariox -= 5
+        if mariox <= 10:
             direction = 'up'
     elif direction == 'up':
-        caty -= 5
-        if caty <= 10:
+        marioy -= 5
+        if marioy <= 10:
             direction = 'right'
             
     DISPLAYSURF.fill(WHITE)
-    DISPLAYSURF.blit(catImg, (catx, caty))
+    DISPLAYSURF.blit(marioImg, (mariox, marioy))
 
 
 
