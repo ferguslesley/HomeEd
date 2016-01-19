@@ -3,8 +3,8 @@ from pygame.locals import *
 
 pygame.init()
 
-START_FPS = 10
-MAX_FPS = 100
+START_FPS = 30
+MAX_FPS = 500
 FPS = START_FPS # frames per second setting
 fpsClock = pygame.time.Clock()
 
@@ -19,7 +19,29 @@ caty = 10
 direction = 'right'
 
 while True: # the main game loop
-    DISPLAYSURF.fill(WHITE)
+    
+
+    keys = pygame.key.get_pressed()
+    if not keys[K_LCTRL]:
+        FPS = FPS
+    else:
+        FPS = FPS - 1
+    if FPS > MAX_FPS:
+        FPS = MAX_FPS
+
+    if not keys[K_LSHIFT]:
+        FPS = FPS
+    else:
+        FPS = FPS + 1
+    if FPS > MAX_FPS:
+        FPS = MAX_FPS
+
+
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+
 
     if direction == 'right':
         catx += 5
@@ -37,21 +59,11 @@ while True: # the main game loop
         caty -= 5
         if caty == 10:
             direction = 'right'
-
-    keys = pygame.key.get_pressed()
-    if not keys[K_SPACE]:
-        FPS = FPS + 0.8
-    if FPS > MAX_FPS:
-        FPS = MAX_FPS
-
+            
+    DISPLAYSURF.fill(WHITE)
     DISPLAYSURF.blit(catImg, (catx, caty))
 
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
-        elif event.type == pygame.KEYDOWN:
-            FPS = START_FPS
+
 
     pygame.display.update()
     fpsClock.tick(FPS)
