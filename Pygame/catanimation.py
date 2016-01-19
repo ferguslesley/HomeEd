@@ -36,6 +36,28 @@ while True: # the main game loop
     if FPS > MAX_FPS:
         FPS = MAX_FPS
 
+    if not keys[K_RIGHT]:
+        direction = direction
+    else:
+        direction = 'right'
+
+    if not keys[K_LEFT]:
+        direction = direction
+    else:
+        direction = 'left'
+
+    if not keys[K_UP]:
+        direction = direction
+    else:
+        direction = 'up'
+
+    if not keys[K_DOWN]:
+        direction = direction
+    else:
+        direction = 'down'
+    
+    
+
 
     for event in pygame.event.get():
         if event.type == QUIT:
