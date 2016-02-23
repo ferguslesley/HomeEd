@@ -55,12 +55,24 @@ def drawcell(row, column, content):
     # ... and fill it!
     shape = content[0]
     colour = content[1]
+    '''
     cell_text = shape  #"{}".format(content)
     textSurfaceObj = fontObj.render(cell_text, True, BLACK, colour)
     textRectObj = textSurfaceObj.get_rect()
     textRectObj.center = rect.center
     DISPLAYSURF.blit(textSurfaceObj, textRectObj)
+    '''
+    drawIcon(shape, colour, rect)
+    
 
+#################################################
+def drawcellempty(row, column, content):
+    # draw the cell
+    rect = cellrect(row, column)
+    pygame.draw.rect(DISPLAYSURF, WHITE, rect)
+    # ... and fill it!
+    shape = content[0]
+    colour = content[1]
 #################################################
 # cellrect - calculate the Rect for the cell
 
@@ -68,6 +80,46 @@ def cellrect(row, column):
     x = MARGINX + (CELLW * column)
     y = MARGINY + (CELLH * row)
     return Rect(x , y, CELLW - 1, CELLH - 1)
+
+#################################################
+# find_cell(x, y) - work out which grid cell the x and y is in
+
+def find_cell(x, y):
+    column = (x - MARGINX) / CELLW
+    row = (y - MARGINY) / CELLH
+    return row, column
+    
+#################################################   
+def drawIcon(shape, color, rect):
+    #quarter = int(BOXSIZE * 0.25) # syntactic sugar
+    #half =    int(BOXSIZE * 0.5)  # syntactic sugar
+    quarterx = rect.width * 0.25
+    quartery = rect.height * 0.25
+    halfx = rect.width * 0.5
+    halfy = rect.height * 0.5
+    half = int(min(halfx, halfy))
+    quarter = int(min(quarterx, quartery))
+
+    #left, top = leftTopCoordsOfBox(boxx, boxy) # get pixel coords from board coords
+    left = rect.left
+    top = rect.top
+
+    BOXSIZE = min(rect.width, rect.height)
+
+    # Draw the shapes
+    if shape == DONUT:
+        pygame.draw.circle(DISPLAYSURF, color, (left + half, top + half), half - 5)
+        pygame.draw.circle(DISPLAYSURF, BGCOLOR, (left + half, top + half), quarter - 5)
+    elif shape == SQUARE:
+        pygame.draw.rect(DISPLAYSURF, color, (left + quarter, top + quarter, BOXSIZE - half, BOXSIZE - half))
+    elif shape == DIAMOND:
+        pygame.draw.polygon(DISPLAYSURF, color, ((left + half, top), (left + BOXSIZE - 1, top + half), (left + half, top + BOXSIZE - 1), (left, top + half)))
+    elif shape == LINES:
+        for i in range(0, BOXSIZE, 4):
+            pygame.draw.line(DISPLAYSURF, color, (left, top + i), (left + i, top))
+            pygame.draw.line(DISPLAYSURF, color, (left + i, top + BOXSIZE - 1), (left + BOXSIZE - 1, top + i))
+    elif shape == OVAL:
+        pygame.draw.ellipse(DISPLAYSURF, color, (left, top + quarter, BOXSIZE, half))
 
 #################################################
 # build_grid - set up the grid data
@@ -106,7 +158,7 @@ pygame.init()
 
 
 DISPLAYSURF = pygame.display.set_mode((SCREENW, SCREENH))
-pygame.display.set_caption('Drawing')
+pygame.display.set_caption('Memory Game')
 
 fontObj = pygame.font.Font('freesansbold.ttf', 16)
 
@@ -115,10 +167,13 @@ grid = build_grid(ROWS, COLS)
 for row in range(ROWS):
     for column in range(COLS):
         drawcell(row, column, grid[row][column])
-        # and pause
         pygame.display.update()
-        time.sleep(0.05)
-    #raw_input("next!")
+time.sleep(0.05)
+for row in range(ROWS):
+    for column in range(COLS):
+        drawcellempty(row,column, grid[row][column])
+        pygame.display.update()
+
         
     
 
@@ -128,4 +183,11 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == MOUSEMOTION:
+            mousex, mousey = event.pos
+        if event.type == MOUSEBUTTONUP:
+            row, column = find_cell(mousex, mousey)
+            drawcell(row, column, grid[row][column])
+
     pygame.display.update()
+
