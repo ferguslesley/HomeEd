@@ -183,11 +183,13 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == MOUSEMOTION:
-            mousex, mousey = event.pos
+
         if event.type == MOUSEBUTTONUP:
+            mousex, mousey = event.pos
             row, column = find_cell(mousex, mousey)
-            drawcell(row, column, grid[row][column])
+            if row < ROWS and column < COLS and row >= 0 and column >=0:
+                # on the grid ...
+                drawcell(row, column, grid[row][column])
 
     pygame.display.update()
 
