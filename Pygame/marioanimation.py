@@ -12,7 +12,7 @@ SCREEN_H = 600
 
 # set up the window
 DISPLAYSURF = pygame.display.set_mode((SCREEN_W, SCREEN_H), 0, 32)
-pygame.display.set_caption('Animation')
+pygame.display.set_caption('SUPER TANK MAX')
 
 WHITE = (255, 255, 255)
 RED   = (255,   0,   0)
