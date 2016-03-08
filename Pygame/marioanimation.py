@@ -16,17 +16,21 @@ pygame.display.set_caption('Animation')
 
 WHITE = (255, 255, 255)
 RED   = (255,   0,   0)
-marioImg = pygame.image.load('mariokart.png')
-mariox = 10
-marioy = 10
+TankImgUp = pygame.image.load('TankSpriteForward.png',)
+TankImgRight = pygame.image.load('TankSpriteRight.png',)
+TankImgDown = pygame.image.load('TankSpriteBackwards.png',)
+TankImgLeft = pygame.image.load('TankSpriteLeft.png',)
+Tankx = 10
+Tanky = 10
 direction = 'right'
+TankImg = TankImgRight
 lasers = []
 firing = False
 MAXLASERS = 5
 
 def fire_laser():
     global lasers
-    lasers.append((mariox, marioy + 50))
+    lasers.append((Tankx, Tanky + 50))
 
 while True: # the main game loop
     
@@ -46,18 +50,20 @@ while True: # the main game loop
         firing = False
 
     if keys[K_RIGHT]:
-
         direction = 'right'
+        TankImg = TankImgRight
 
     if keys[K_LEFT]:
         direction = 'left'
+        TankImg = TankImgLeft
 
     if keys[K_UP]:
         direction = 'up'
-
+        TankImg = TankImgUp
+        
     if keys[K_DOWN]:
         direction = 'down'
-
+        TankImg = TankImgDown
     if FPS < MIN_FPS:
         FPS = MIN_FPS
     if FPS > MAX_FPS:
@@ -71,27 +77,27 @@ while True: # the main game loop
             sys.exit()
 
 
-    # move Mario
+    # move Tank
     if direction == 'right':
-        mariox += 5
-        if mariox >= SCREEN_W - 120:
+        Tankx += 5
+        if Tankx >= SCREEN_W - 120:
             #direction = 'down'
-            mariox = SCREEN_W - 120
+            Tankx = SCREEN_W - 120
     elif direction == 'down':
-        marioy += 5
-        if marioy >= SCREEN_H - 80:
+        Tanky += 5
+        if Tanky >= SCREEN_H - 80:
             #direction = 'left'
-            marioy = SCREEN_H - 80
+            Tanky = SCREEN_H - 80
     elif direction == 'left':
-        mariox -= 5
-        if mariox <= 10:
+        Tankx -= 5
+        if Tankx <= 10:
             #direction = 'up'
-            mariox = 10
+            Tankx = 10
     elif direction == 'up':
-        marioy -= 5
-        if marioy <= 10:
+        Tanky -= 5
+        if Tanky <= 10:
             #direction = 'right'
-            marioy = 10
+            Tanky = 10
 
     # move the laser bolts
     for laseridx in range(len(lasers)-1, -1, -1):
@@ -101,7 +107,7 @@ while True: # the main game loop
             
     # draw the screen
     DISPLAYSURF.fill(WHITE)
-    DISPLAYSURF.blit(marioImg, (mariox, marioy))
+    DISPLAYSURF.blit(TankImg, (Tankx, Tanky))
     for laser in lasers:
         pygame.draw.line(DISPLAYSURF, RED, (laser[0], laser[1]), (laser[0] -40, laser[1]), 2)
         
