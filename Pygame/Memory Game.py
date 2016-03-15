@@ -175,7 +175,9 @@ for row in range(ROWS):
         pygame.display.update()
 
         
-    
+oldx, oldy = -1, -1
+oldrow, oldcol = -1, -1
+firstclick = True    
 
 # run the game loop
 while True:
@@ -187,9 +189,35 @@ while True:
         if event.type == MOUSEBUTTONUP:
             mousex, mousey = event.pos
             row, column = find_cell(mousex, mousey)
-            if row < ROWS and column < COLS and row >= 0 and column >=0:
-                # on the grid ...
-                drawcell(row, column, grid[row][column])
+            if row < ROWS and column < COLS and row >= 0 and column >=0: # on the grid ...
+                cell = grid[row][column]
+                # TODO: stop clicking same cell twice
+                # TODO: stop closing found cell!
+                # TODO: count clicks
+                # TODO: detect completed grid
+                if firstclick:
+                    # hide previous
+                    # oldrow, oldcol = find_cell(oldx, oldy)
+                    # drawcellempty(oldrow,oldcol, grid[oldrow][oldcol])
+                    # draw cell contents
+                    drawcell(row, column, grid[row][column])
+                    # and remember which cell
+                    oldx, oldy = mousex, mousey
+                    oldrow, oldcol = row, column
+                    oldcell = cell
+                    firstclick = False
+                else:
+                    drawcell(row, column, cell)
+                    if oldcell == cell:
+                        # they match
+                        pass
+                    else:
+                        # different
+                        pygame.display.update()
+                        pygame.time.wait(1000)
+                        drawcellempty(oldrow,oldcol, oldcell)
+                        drawcellempty(row,column, cell)
+                    firstclick = True
 
     pygame.display.update()
 
