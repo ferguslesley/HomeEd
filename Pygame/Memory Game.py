@@ -129,7 +129,7 @@ def build_grid(rows, cols):
     shapecolours = []
     for shape in ALLSHAPES:
         for colour in ALLCOLOURS:
-            shapecolours.append((shape, colour))
+            shapecolours.append((shape, colour, False))
     #get the right ammount of shapes in a random order
     shuffle(shapecolours)
     numshapes = int(ROWS * COLS / 2)
@@ -150,6 +150,14 @@ def build_grid(rows, cols):
 def random_between(MIN,MAX) :
     a=int(random() * (MAX - MIN + 1)) + MIN
     return a
+
+#################################################
+
+def guessed(cell):
+    if cell[2] == True:
+        return True
+    else:
+        return False
 
 #################################################
 
@@ -191,11 +199,16 @@ while True:
             row, column = find_cell(mousex, mousey)
             if row < ROWS and column < COLS and row >= 0 and column >=0: # on the grid ...
                 cell = grid[row][column]
+                if guessed(cell):
+                    pass
+                elif oldrow == row and oldcol == column:
+                    pass
+                    
                 # TODO: stop clicking same cell twice
                 # TODO: stop closing found cell!
                 # TODO: count clicks
                 # TODO: detect completed grid
-                if firstclick:
+                elif firstclick:
                     # hide previous
                     # oldrow, oldcol = find_cell(oldx, oldy)
                     # drawcellempty(oldrow,oldcol, grid[oldrow][oldcol])
@@ -210,13 +223,17 @@ while True:
                     drawcell(row, column, cell)
                     if oldcell == cell:
                         # they match
-                        pass
+                        # so mark them as Found
+                        grid[row][column] = (cell[0], cell[1], True) 
+                        grid[oldrow][oldcol] = (oldcell[0], oldcell[1], True) 
                     else:
-                        # different
+                        # different - so reset
                         pygame.display.update()
                         pygame.time.wait(1000)
                         drawcellempty(oldrow,oldcol, oldcell)
                         drawcellempty(row,column, cell)
+                        oldrow = -1
+                        oldcol = -1
                     firstclick = True
 
     pygame.display.update()
