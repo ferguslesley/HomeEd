@@ -5,6 +5,9 @@ from pygame.locals import *
 import time
 from random import random, shuffle
 
+##########################################################
+# Game constants
+
 SCREENW = 400
 SCREENH = 300
 
@@ -17,9 +20,9 @@ COLS = 8
 CELLW = (SCREENW - MARGINX * 2) / COLS
 CELLH = (SCREENH - MARGINY * 2) / ROWS
 
-WHITE = (255, 255, 255)
-BLACK = (  0,   0,   0)
 #            R    G    B
+WHITE    = (255, 255, 255)
+BLACK    = (  0,   0,   0)
 GRAY     = (100, 100, 100)
 NAVYBLUE = ( 60,  60, 100)
 WHITE    = (255, 255, 255)
@@ -27,7 +30,7 @@ RED      = (255,   0,   0)
 GREEN    = (  0, 255,   0)
 BLUE     = (  0,   0, 255)
 YELLOW   = (255, 255,   0)
-ORANGE   = (255, 128,   0)
+ORANGE   = (255, 165,   0)
 PURPLE   = (255,   0, 255)
 CYAN     = (  0, 255, 255)
 
@@ -48,20 +51,18 @@ assert len(ALLCOLOURS) * len(ALLSHAPES) * 2 >= ROWS * COLS, "Board is too big fo
 
 #################################################
 # drawcell - draw the cell and fill it with a number
+#     row
+#     column
+#     content - tuple of: (shape, colour)
+
 def drawcell(row, column, content):
     # draw the cell
     rect = cellrect(row, column)
     pygame.draw.rect(DISPLAYSURF, WHITE, rect)
+
     # ... and fill it!
     shape = content[0]
     colour = content[1]
-    '''
-    cell_text = shape  #"{}".format(content)
-    textSurfaceObj = fontObj.render(cell_text, True, BLACK, colour)
-    textRectObj = textSurfaceObj.get_rect()
-    textRectObj.center = rect.center
-    DISPLAYSURF.blit(textSurfaceObj, textRectObj)
-    '''
     drawIcon(shape, colour, rect)
     
 
@@ -70,9 +71,7 @@ def drawcellempty(row, column, content):
     # draw the cell
     rect = cellrect(row, column)
     pygame.draw.rect(DISPLAYSURF, WHITE, rect)
-    # ... and fill it!
-    shape = content[0]
-    colour = content[1]
+
 #################################################
 # cellrect - calculate the Rect for the cell
 
@@ -83,16 +82,20 @@ def cellrect(row, column):
 
 #################################################
 # find_cell(x, y) - work out which grid cell the x and y is in
+# returns row, column
 
 def find_cell(x, y):
     column = (x - MARGINX) / CELLW
     row = (y - MARGINY) / CELLH
     return row, column
     
-#################################################   
+#################################################  
+# draws shapes
+#              shape - constants at beginning
+#              color - constants at beginning
+#              rect  - Rect of drawing area
+ 
 def drawIcon(shape, color, rect):
-    #quarter = int(BOXSIZE * 0.25) # syntactic sugar
-    #half =    int(BOXSIZE * 0.5)  # syntactic sugar
     quarterx = rect.width * 0.25
     quartery = rect.height * 0.25
     halfx = rect.width * 0.5
@@ -100,7 +103,6 @@ def drawIcon(shape, color, rect):
     half = int(min(halfx, halfy))
     quarter = int(min(quarterx, quartery))
 
-    #left, top = leftTopCoordsOfBox(boxx, boxy) # get pixel coords from board coords
     left = rect.left
     top = rect.top
 
@@ -125,17 +127,19 @@ def drawIcon(shape, color, rect):
 # build_grid - set up the grid data
 
 def build_grid(rows, cols):
-#build a list of all shape/colour combinations
+    # build a list of all shape/colour combinations
     shapecolours = []
     for shape in ALLSHAPES:
         for colour in ALLCOLOURS:
             shapecolours.append((shape, colour, False))
-    #get the right ammount of shapes in a random order
-    shuffle(shapecolours)
-    numshapes = int(ROWS * COLS / 2)
-    shapes = shapecolours[:numshapes] * 2
-    shuffle(shapes)
-    #build the grid
+
+    # get the right amount of shapes in a random order
+    shuffle(shapecolours) # one of each in random order
+    numshapes = int(ROWS * COLS / 2) # half of the shapes
+    shapes = shapecolours[:numshapes] * 2 # get doubled
+    shuffle(shapes) # and randomised again
+
+    # build the grid
     data = []
     for row in range(rows):
         new_row = []
@@ -176,7 +180,7 @@ for row in range(ROWS):
     for column in range(COLS):
         drawcell(row, column, grid[row][column])
         pygame.display.update()
-time.sleep(0.05)
+time.sleep(1)
 for row in range(ROWS):
     for column in range(COLS):
         drawcellempty(row,column, grid[row][column])
@@ -204,14 +208,9 @@ while True:
                 elif oldrow == row and oldcol == column:
                     pass
                     
-                # TODO: stop clicking same cell twice
-                # TODO: stop closing found cell!
                 # TODO: count clicks
                 # TODO: detect completed grid
                 elif firstclick:
-                    # hide previous
-                    # oldrow, oldcol = find_cell(oldx, oldy)
-                    # drawcellempty(oldrow,oldcol, grid[oldrow][oldcol])
                     # draw cell contents
                     drawcell(row, column, grid[row][column])
                     # and remember which cell
