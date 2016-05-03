@@ -17,8 +17,8 @@ MARGINX = SCREENW / 20
 MARGINTOP = SCREENH / 20
 MARGINBOTTOM = MARGINTOP * 2
 if DEBUG:
-    ROWS = 2
-    COLS = 2
+    ROWS = 4
+    COLS = 4
 else:
     ROWS = 8
     COLS = 8
@@ -182,7 +182,7 @@ def draw_text(text, x, y, size):
     font = pygame.font.Font('freesansbold.ttf', size)
     rendered = font.render(text, True, WHITE)
     displayRect = rendered.get_rect()
-    displayRect.topleft = (x, y)
+    displayRect.center = (x, y)
     DISPLAYSURF.blit(rendered, displayRect)
 
 
@@ -192,9 +192,8 @@ def end_game():
     area = Rect(0, 0, SCREENW, SCREENH)
     pygame.draw.rect(DISPLAYSURF, BLACK, area)
     statusmessage = 'Score = {}  Guesses = {}  Time = {}:{}:{}'.format(score, guesses, int(hours), int(minutes), int(seconds))
-    draw_text(statusmessage, MARGINX, SCREENH - MARGINBOTTOM * 3/4, MARGINBOTTOM * 2/5)
-
-    
+    draw_text(statusmessage, SCREENW / 2, SCREENH / 2, MARGINBOTTOM * 2/5)
+    pygame.display.update()  
     
 
 #################################################
@@ -232,18 +231,21 @@ finished = False
 
 # run the game loop
 while True:
-    if the_clocks_running:
+    if score >= MAXSCORE:
+        finished = True
+        the_clocks_running = False
+        end_game()
+    elif the_clocks_running:
         elapsed_time = time.time() - start_time
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
 
-            
-        if score >= MAXSCORE:
-            end_game()
+        if finished:
+            pass
 
-        if event.type == MOUSEBUTTONUP:
+        elif event.type == MOUSEBUTTONUP:
             if not the_clocks_running:
                 Debug("start the clock")
                 start_time = time.time()
@@ -256,9 +258,7 @@ while True:
                     pass
                 elif oldrow == row and oldcol == column:
                     pass
-                    
-                # TODO: count clicks
-                # TODO: detect completed grid
+    
                 elif firstclick:
                     # draw cell contents
                     drawcell(row, column, grid[row][column])
@@ -287,12 +287,13 @@ while True:
                     firstclick = True
 
 
-    #Updating Status and Refreshing Screen
-    statusrect = Rect(0, SCREENH - MARGINBOTTOM, SCREENW, MARGINBOTTOM)
-    pygame.draw.rect(DISPLAYSURF, BLACK, statusrect)
-    hours, rem = divmod(elapsed_time, 3600)
-    minutes, seconds = divmod(rem, 60)
-    statusmessage = 'Score = {}  Guesses = {}  Time = {}:{}:{}'.format(score, guesses, int(hours), int(minutes), int(seconds))
-    draw_text(statusmessage, MARGINX, SCREENH - MARGINBOTTOM * 3/4, MARGINBOTTOM * 2/5)
-    pygame.display.update()
+    if not finished:
+        #Updating Status and Refreshing Screen
+        statusrect = Rect(0, SCREENH - MARGINBOTTOM, SCREENW, MARGINBOTTOM)
+        pygame.draw.rect(DISPLAYSURF, BLACK, statusrect)
+        hours, rem = divmod(elapsed_time, 3600)
+        minutes, seconds = divmod(rem, 60)
+        statusmessage = 'Score = {}  Guesses = {}  Time = {}:{}:{}'.format(score, guesses, int(hours), int(minutes), int(seconds))
+        draw_text(statusmessage, SCREENW / 2, SCREENH - MARGINBOTTOM / 2, MARGINBOTTOM * 2/5)
+        pygame.display.update()
 
