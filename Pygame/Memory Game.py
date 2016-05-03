@@ -8,17 +8,24 @@ from random import random, shuffle
 ##########################################################
 # Game constants
 
+DEBUG = True
+
 SCREENW = 400
-SCREENH = 300
+SCREENH = 400
 
 MARGINX = SCREENW / 20
-MARGINY = SCREENH / 20
-
-ROWS = 8
-COLS = 8
+MARGINTOP = SCREENH / 20
+MARGINBOTTOM = MARGINTOP * 2
+if DEBUG:
+    ROWS = 2
+    COLS = 2
+else:
+    ROWS = 8
+    COLS = 8
+MAXSCORE = ROWS * COLS / 2
 
 CELLW = (SCREENW - MARGINX * 2) / COLS
-CELLH = (SCREENH - MARGINY * 2) / ROWS
+CELLH = (SCREENH - MARGINTOP - MARGINBOTTOM) / ROWS
 
 #            R    G    B
 WHITE    = (255, 255, 255)
@@ -50,6 +57,12 @@ ALLSHAPES = (DONUT, SQUARE, DIAMOND, LINES, OVAL)
 assert len(ALLCOLOURS) * len(ALLSHAPES) * 2 >= ROWS * COLS, "Board is too big for the number of shapes/colors defined."
 
 #################################################
+
+def Debug(text):
+    if DEBUG:
+        print text
+
+#################################################
 # drawcell - draw the cell and fill it with a number
 #     row
 #     column
@@ -77,7 +90,7 @@ def drawcellempty(row, column, content):
 
 def cellrect(row, column):
     x = MARGINX + (CELLW * column)
-    y = MARGINY + (CELLH * row)
+    y = MARGINTOP + (CELLH * row)
     return Rect(x , y, CELLW - 1, CELLH - 1)
 
 #################################################
@@ -86,7 +99,7 @@ def cellrect(row, column):
 
 def find_cell(x, y):
     column = (x - MARGINX) / CELLW
-    row = (y - MARGINY) / CELLH
+    row = (y - MARGINTOP) / CELLH
     return row, column
     
 #################################################  
@@ -165,14 +178,33 @@ def guessed(cell):
 
 #################################################
 
+def draw_text(text, x, y, size):
+    font = pygame.font.Font('freesansbold.ttf', size)
+    rendered = font.render(text, True, WHITE)
+    displayRect = rendered.get_rect()
+    displayRect.topleft = (x, y)
+    DISPLAYSURF.blit(rendered, displayRect)
+
+
+#################################################
+
+def end_game():
+    area = Rect(0, 0, SCREENW, SCREENH)
+    pygame.draw.rect(DISPLAYSURF, BLACK, area)
+    statusmessage = 'Score = {}  Guesses = {}  Time = {}:{}:{}'.format(score, guesses, int(hours), int(minutes), int(seconds))
+    draw_text(statusmessage, MARGINX, SCREENH - MARGINBOTTOM * 3/4, MARGINBOTTOM * 2/5)
+
+    
+    
+
+#################################################
+
 
 pygame.init()
 
 
 DISPLAYSURF = pygame.display.set_mode((SCREENW, SCREENH))
 pygame.display.set_caption('Memory Game')
-
-fontObj = pygame.font.Font('freesansbold.ttf', 16)
 
 grid = build_grid(ROWS, COLS)
 
@@ -186,19 +218,36 @@ for row in range(ROWS):
         drawcellempty(row,column, grid[row][column])
         pygame.display.update()
 
-        
+
+
 oldx, oldy = -1, -1
 oldrow, oldcol = -1, -1
 firstclick = True    
+score = 0
+guesses = 0
+elapsed_time = 0
+start_time = 0
+the_clocks_running = False
+finished = False
 
 # run the game loop
 while True:
+    if the_clocks_running:
+        elapsed_time = time.time() - start_time
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
 
+            
+        if score >= MAXSCORE:
+            end_game()
+
         if event.type == MOUSEBUTTONUP:
+            if not the_clocks_running:
+                Debug("start the clock")
+                start_time = time.time()
+                the_clocks_running = True
             mousex, mousey = event.pos
             row, column = find_cell(mousex, mousey)
             if row < ROWS and column < COLS and row >= 0 and column >=0: # on the grid ...
@@ -221,6 +270,7 @@ while True:
                 else:
                     drawcell(row, column, cell)
                     if oldcell == cell:
+                        score = score + 1
                         # they match
                         # so mark them as Found
                         grid[row][column] = (cell[0], cell[1], True) 
@@ -233,7 +283,16 @@ while True:
                         drawcellempty(row,column, cell)
                         oldrow = -1
                         oldcol = -1
+                        guesses = guesses + 1
                     firstclick = True
 
+
+    #Updating Status and Refreshing Screen
+    statusrect = Rect(0, SCREENH - MARGINBOTTOM, SCREENW, MARGINBOTTOM)
+    pygame.draw.rect(DISPLAYSURF, BLACK, statusrect)
+    hours, rem = divmod(elapsed_time, 3600)
+    minutes, seconds = divmod(rem, 60)
+    statusmessage = 'Score = {}  Guesses = {}  Time = {}:{}:{}'.format(score, guesses, int(hours), int(minutes), int(seconds))
+    draw_text(statusmessage, MARGINX, SCREENH - MARGINBOTTOM * 3/4, MARGINBOTTOM * 2/5)
     pygame.display.update()
 
