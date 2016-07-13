@@ -1,8 +1,11 @@
 import pygame, sys
 from pygame.locals import *
+from pygame import *
+
+from pygame.time import set_timer
 
 pygame.init()
-
+DEBUG = True
 START_FPS = 30
 MAX_FPS = 500
 MIN_FPS = 15
@@ -10,7 +13,9 @@ FPS = START_FPS  # frames per second setting
 fpsClock = pygame.time.Clock()
 SCREEN_W = 800
 SCREEN_H = 600
-
+MAX_SPEED = 20
+NORM_SPEED = 5
+MIN_SPEED = 3
 # set up the window
 DISPLAYSURF = pygame.display.set_mode((SCREEN_W, SCREEN_H), 0, 32)
 pygame.display.set_caption('SUPER TANK MAX')
@@ -28,7 +33,8 @@ TankImg = TankImgRight
 lasers = []
 firing = False
 MAXLASERS = 5
-
+lastTime = 0
+TankSpeed = NORM_SPEED
 
 def fire_laser():
     global lasers, direction
@@ -48,10 +54,11 @@ while True:  # the main game loop
 
     keys = pygame.key.get_pressed()
     if keys[K_LCTRL]:
-        FPS = FPS - 1
+        TankSpeed = MIN_SPEED
 
     if keys[K_LSHIFT]:
-        FPS = FPS + 1
+        TankSpeed = MAX_SPEED
+        set_timer(USEREVENT, 1000)  # trigger speed reset
 
     if keys[K_SPACE]:
         if not firing and len(lasers) < MAXLASERS:
@@ -84,25 +91,28 @@ while True:  # the main game loop
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == USEREVENT:
+            TankSpeed = NORM_SPEED
+            set_timer(USEREVENT, 0)
 
     # move Tank
     if direction == 'right':
-        Tankx += 5
+        Tankx += TankSpeed
         if Tankx >= SCREEN_W - 120:
             # direction = 'down'
             Tankx = SCREEN_W - 120
     elif direction == 'down':
-        Tanky += 5
+        Tanky += TankSpeed
         if Tanky >= SCREEN_H - 80:
             # direction = 'left'
             Tanky = SCREEN_H - 80
     elif direction == 'left':
-        Tankx -= 5
+        Tankx -= TankSpeed
         if Tankx <= 10:
             # direction = 'up'
             Tankx = 10
     elif direction == 'up':
-        Tanky -= 5
+        Tanky -= TankSpeed
         if Tanky <= 10:
             # direction = 'right'
             Tanky = 10
