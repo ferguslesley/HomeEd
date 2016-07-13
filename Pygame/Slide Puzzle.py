@@ -107,7 +107,7 @@ def main():
                     slideTo = DOWN
 
         if slideTo:
-            slideAnimation(mainBoard, slideTo, 'Click tile or press arrow keys to slide.', 8) # show slide on screen
+            slideAnimation(mainBoard, slideTo, 'Click tile or press arrow keys to slide.', 16) # show slide on screen
             makeMove(mainBoard, slideTo)
             allMoves.append(slideTo) # record the slide
         pygame.display.update()
@@ -120,12 +120,12 @@ def terminate():
 
 
 def checkForQuit():
-    for event in pygame.event.get(QUIT): # get all the QUIT events
-        terminate() # terminate if any QUIT events are present
-    for event in pygame.event.get(KEYUP): # get all the KEYUP events
+    for event in pygame.event.get(QUIT):  # get all the QUIT events
+        terminate()  # terminate if any QUIT events are present
+    for event in pygame.event.get(KEYUP):  # get all the KEYUP events
         if event.key == K_ESCAPE:
-            terminate() # terminate if the KEYUP event was for the Esc key
-        pygame.event.post(event) # put the other KEYUP event objects back
+            terminate()  # terminate if the KEYUP event was for the Esc key
+        pygame.event.post(event)  # put the other KEYUP event objects back
 
 
 def getStartingBoard():
@@ -256,23 +256,23 @@ def slideAnimation(board, direction, message, animationSpeed):
 
     blankx, blanky = getBlankPosition(board)
     if direction == UP:
-        movex = blankx
-        movey = blanky + 1
+        tilex = blankx
+        tiley = blanky + 1
     elif direction == DOWN:
-        movex = blankx
-        movey = blanky - 1
+        tilex = blankx
+        tiley = blanky - 1
     elif direction == LEFT:
-        movex = blankx + 1
-        movey = blanky
+        tilex = blankx + 1
+        tiley = blanky
     elif direction == RIGHT:
-        movex = blankx - 1
-        movey = blanky
+        tilex = blankx - 1
+        tiley = blanky
 
     # prepare the base surface
     drawBoard(board, message)
     baseSurf = DISPLAYSURF.copy()
     # draw a blank space over the moving tile on the baseSurf Surface.
-    moveLeft, moveTop = getLeftTopOfTile(movex, movey)
+    moveLeft, moveTop = getLeftTopOfTile(tilex, tiley)
     pygame.draw.rect(baseSurf, BGCOLOR, (moveLeft, moveTop, TILESIZE, TILESIZE))
 
     for i in range(0, TILESIZE, animationSpeed):
@@ -280,13 +280,13 @@ def slideAnimation(board, direction, message, animationSpeed):
         checkForQuit()
         DISPLAYSURF.blit(baseSurf, (0, 0))
         if direction == UP:
-            drawTile(movex, movey, board[movex][movey], 0, -i)
+            drawTile(tilex, tiley, board[tilex][tiley], 0, -i)
         if direction == DOWN:
-            drawTile(movex, movey, board[movex][movey], 0, i)
+            drawTile(tilex, tiley, board[tilex][tiley], 0, i)
         if direction == LEFT:
-            drawTile(movex, movey, board[movex][movey], -i, 0)
+            drawTile(tilex, tiley, board[tilex][tiley], -i, 0)
         if direction == RIGHT:
-            drawTile(movex, movey, board[movex][movey], i, 0)
+            drawTile(tilex, tiley, board[tilex][tiley], i, 0)
 
         pygame.display.update()
         FPSCLOCK.tick(FPS)
@@ -299,7 +299,7 @@ def generateNewPuzzle(numSlides):
     board = getStartingBoard()
     drawBoard(board, '')
     pygame.display.update()
-    pygame.time.wait(500) # pause 500 milliseconds for effect
+    pygame.time.wait(500)  # pause 500 milliseconds for effect
     lastMove = None
     for i in range(numSlides):
         move = getRandomMove(board, lastMove)
@@ -312,7 +312,7 @@ def generateNewPuzzle(numSlides):
 
 def resetAnimation(board, allMoves):
     # make all of the moves in allMoves in reverse.
-    revAllMoves = allMoves[:] # gets a copy of the list
+    revAllMoves = allMoves[:]  # gets a copy of the list
     revAllMoves.reverse()
 
     for move in revAllMoves:
