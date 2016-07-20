@@ -21,6 +21,31 @@ def fire_laser():
         lasers.append(dict(x=Tankx, y=Tanky + 41, direction=direction))
 
 
+def Move_Tank():
+    global Tankx, Tanky
+    # move Tank
+    if direction == 'right':
+        Tankx += TankSpeed
+        if Tankx >= SCREEN_W - 120:
+            # direction = 'down'
+            Tankx = SCREEN_W - 120
+    elif direction == 'down':
+        Tanky += TankSpeed
+        if Tanky >= SCREEN_H - 80:
+            # direction = 'left'
+            Tanky = SCREEN_H - 80
+    elif direction == 'left':
+        Tankx -= TankSpeed
+        if Tankx <= 10:
+            # direction = 'up'
+            Tankx = 10
+    elif direction == 'up':
+        Tanky -= TankSpeed
+        if Tanky <= 10:
+            # direction = 'right'
+            Tanky = 10
+
+
 while True:  # the main game loop
 
 
@@ -67,27 +92,7 @@ while True:  # the main game loop
             TankSpeed = NORM_SPEED
             set_timer(USEREVENT, 0)
 
-    # move Tank
-    if direction == 'right':
-        Tankx += TankSpeed
-        if Tankx >= SCREEN_W - 120:
-            # direction = 'down'
-            Tankx = SCREEN_W - 120
-    elif direction == 'down':
-        Tanky += TankSpeed
-        if Tanky >= SCREEN_H - 80:
-            # direction = 'left'
-            Tanky = SCREEN_H - 80
-    elif direction == 'left':
-        Tankx -= TankSpeed
-        if Tankx <= 10:
-            # direction = 'up'
-            Tankx = 10
-    elif direction == 'up':
-        Tanky -= TankSpeed
-        if Tanky <= 10:
-            # direction = 'right'
-            Tanky = 10
+    Move_Tank()
 
     # move the laser bolts
     for laseridx in range(len(lasers) - 1, -1, -1):
