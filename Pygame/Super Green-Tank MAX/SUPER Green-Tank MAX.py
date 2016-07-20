@@ -3,38 +3,10 @@ from pygame.locals import *
 from pygame import *
 
 from pygame.time import set_timer
+from GreenTankConfig import *
 
 pygame.init()
-DEBUG = True
-START_FPS = 30
-MAX_FPS = 500
-MIN_FPS = 15
-FPS = START_FPS  # frames per second setting
-fpsClock = pygame.time.Clock()
-SCREEN_W = 800
-SCREEN_H = 600
-MAX_SPEED = 20
-NORM_SPEED = 5
-MIN_SPEED = 3
-# set up the window
-DISPLAYSURF = pygame.display.set_mode((SCREEN_W, SCREEN_H), 0, 32)
-pygame.display.set_caption('SUPER TANK MAX')
 
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-TankImgUp = pygame.image.load('TankSpriteForward.png', )
-TankImgRight = pygame.image.load('TankSpriteRight.png', )
-TankImgDown = pygame.image.load('TankSpriteBackwards.png', )
-TankImgLeft = pygame.image.load('TankSpriteLeft.png', )
-Tankx = 10
-Tanky = 10
-direction = 'right'
-TankImg = TankImgRight
-lasers = []
-firing = False
-MAXLASERS = 5
-lastTime = 0
-TankSpeed = NORM_SPEED
 
 def fire_laser():
     global lasers, direction
