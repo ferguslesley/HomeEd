@@ -27,6 +27,9 @@ TankImgUp = image.load('TankSpriteForward.png', )
 TankImgRight = image.load('TankSpriteRight.png', )
 TankImgDown = image.load('TankSpriteBackwards.png', )
 TankImgLeft = image.load('TankSpriteLeft.png', )
+BackroundWorld = image.load('SceneryBackround.png')
+# Stretch Image to fit Window
+BackroundWorld = transform.scale(BackroundWorld, (SCREEN_W, SCREEN_H))
 Tankx = 10
 Tanky = 10
 direction = 'right'

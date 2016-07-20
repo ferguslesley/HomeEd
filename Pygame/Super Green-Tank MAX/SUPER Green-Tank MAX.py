@@ -67,18 +67,23 @@ while True:  # the main game loop
     if keys[K_RIGHT]:
         direction = 'right'
         TankImg = TankImgRight
+        Move_Tank()
 
-    if keys[K_LEFT]:
+    elif keys[K_LEFT]:
         direction = 'left'
         TankImg = TankImgLeft
+        Move_Tank()
 
-    if keys[K_UP]:
+    elif keys[K_UP]:
         direction = 'up'
         TankImg = TankImgUp
+        Move_Tank()
 
-    if keys[K_DOWN]:
+    elif keys[K_DOWN]:
         direction = 'down'
         TankImg = TankImgDown
+        Move_Tank()
+
     if FPS < MIN_FPS:
         FPS = MIN_FPS
     if FPS > MAX_FPS:
@@ -92,7 +97,7 @@ while True:  # the main game loop
             TankSpeed = NORM_SPEED
             set_timer(USEREVENT, 0)
 
-    Move_Tank()
+
 
     # move the laser bolts
     for laseridx in range(len(lasers) - 1, -1, -1):
@@ -116,6 +121,7 @@ while True:  # the main game loop
 
     # draw the screen
     DISPLAYSURF.fill(WHITE)
+    DISPLAYSURF.blit(BackroundWorld, (0, 0))
     DISPLAYSURF.blit(TankImg, (Tankx, Tanky))
     for laser in lasers:
         if laser['direction'] == 'up':
