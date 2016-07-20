@@ -21,7 +21,7 @@ def fire_laser():
         lasers.append(dict(x=Tankx, y=Tanky + 41, direction=direction))
 
 
-def Move_Tank():
+def move_tank():
     global Tankx, Tanky
     # move Tank
     if direction == 'right':
@@ -46,6 +46,44 @@ def Move_Tank():
             Tanky = 10
 
 
+def move_laser():
+    # move the laser bolts
+    for laseridx in range(len(lasers) - 1, -1, -1):
+        # lasers[laseridx] = (lasers[laseridx][0] - 20, lasers[laseridx][1])
+        if lasers[laseridx]['direction'] == 'up':
+            lasers[laseridx]['y'] -= 20
+            if lasers[laseridx]['y'] < 0:
+                lasers.pop(laseridx)
+        elif lasers[laseridx]['direction'] == 'right':
+            lasers[laseridx]['x'] += 20
+            if lasers[laseridx]['x'] > SCREEN_W:
+                lasers.pop(laseridx)
+        elif lasers[laseridx]['direction'] == 'down':
+            lasers[laseridx]['y'] += 20
+            if lasers[laseridx]['y'] > SCREEN_H:
+                lasers.pop(laseridx)
+        elif lasers[laseridx]['direction'] == 'left':
+            lasers[laseridx]['x'] -= 20
+            if lasers[laseridx]['x'] < 0:
+                lasers.pop(laseridx)
+
+
+def draw_screen():
+    # draw the screen
+    DISPLAYSURF.fill(WHITE)
+    DISPLAYSURF.blit(BackroundWorld, (0, 0))
+    DISPLAYSURF.blit(TankImg, (Tankx, Tanky))
+    for laser in lasers:
+        if laser['direction'] == 'up':
+            pygame.draw.line(DISPLAYSURF, RED, (laser['x'], laser['y']), (laser['x'], laser['y'] - 20), 2)
+        elif laser['direction'] == 'right':
+            pygame.draw.line(DISPLAYSURF, RED, (laser['x'], laser['y']), (laser['x'] + 20, laser['y']), 2)
+        elif laser['direction'] == 'down':
+            pygame.draw.line(DISPLAYSURF, RED, (laser['x'], laser['y']), (laser['x'], laser['y'] + 20), 2)
+        elif laser['direction'] == 'left':
+            pygame.draw.line(DISPLAYSURF, RED, (laser['x'], laser['y']), (laser['x'] - 20, laser['y']), 2)
+
+
 while True:  # the main game loop
 
 
@@ -67,22 +105,22 @@ while True:  # the main game loop
     if keys[K_RIGHT]:
         direction = 'right'
         TankImg = TankImgRight
-        Move_Tank()
+        move_tank()
 
     elif keys[K_LEFT]:
         direction = 'left'
         TankImg = TankImgLeft
-        Move_Tank()
+        move_tank()
 
     elif keys[K_UP]:
         direction = 'up'
         TankImg = TankImgUp
-        Move_Tank()
+        move_tank()
 
     elif keys[K_DOWN]:
         direction = 'down'
         TankImg = TankImgDown
-        Move_Tank()
+        move_tank()
 
     if FPS < MIN_FPS:
         FPS = MIN_FPS
@@ -97,41 +135,8 @@ while True:  # the main game loop
             TankSpeed = NORM_SPEED
             set_timer(USEREVENT, 0)
 
-
-
-    # move the laser bolts
-    for laseridx in range(len(lasers) - 1, -1, -1):
-        # lasers[laseridx] = (lasers[laseridx][0] - 20, lasers[laseridx][1])
-        if lasers[laseridx]['direction'] == 'up':
-            lasers[laseridx]['y'] -= 20
-            if lasers[laseridx]['y'] < 0:
-                lasers.pop(laseridx)
-        elif lasers[laseridx]['direction'] == 'right':
-            lasers[laseridx]['x'] += 20
-            if lasers[laseridx]['x'] > SCREEN_W:
-                lasers.pop(laseridx)
-        elif lasers[laseridx]['direction'] == 'down':
-            lasers[laseridx]['y'] += 20
-            if lasers[laseridx]['y'] > SCREEN_H:
-                lasers.pop(laseridx)
-        elif lasers[laseridx]['direction'] == 'left':
-            lasers[laseridx]['x'] -= 20
-            if lasers[laseridx]['x'] < 0:
-                lasers.pop(laseridx)
-
-    # draw the screen
-    DISPLAYSURF.fill(WHITE)
-    DISPLAYSURF.blit(BackroundWorld, (0, 0))
-    DISPLAYSURF.blit(TankImg, (Tankx, Tanky))
-    for laser in lasers:
-        if laser['direction'] == 'up':
-            pygame.draw.line(DISPLAYSURF, RED, (laser['x'], laser['y']), (laser['x'], laser['y'] - 20), 2)
-        elif laser['direction'] == 'right':
-            pygame.draw.line(DISPLAYSURF, RED, (laser['x'], laser['y']), (laser['x'] + 20, laser['y']), 2)
-        elif laser['direction'] == 'down':
-            pygame.draw.line(DISPLAYSURF, RED, (laser['x'], laser['y']), (laser['x'], laser['y'] + 20), 2)
-        elif laser['direction'] == 'left':
-            pygame.draw.line(DISPLAYSURF, RED, (laser['x'], laser['y']), (laser['x'] - 20, laser['y']), 2)
+    move_laser()
+    draw_screen()
 
     pygame.display.update()
     fpsClock.tick(FPS)
